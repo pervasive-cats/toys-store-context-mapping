@@ -1,0 +1,156 @@
+import "domain.cml"
+
+BoundedContext UsersContext implements UsersDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for user data management: users creation, deletion and data update. Support to user login and logout, while keeping login session."
+    implementationTechnology "Akka actor"
+    responsibilities "Customers", "Store Managers", "Administration"
+
+    Aggregate User {
+
+        abstract Entity User {
+            aggregateRoot
+
+            - Username username
+        }
+
+        ValueObject Username {
+            String username
+        }
+
+        ValueObject Password {
+            String password
+        }    
+    }
+
+    Aggregate Customer {
+
+        Entity Customer extends User {
+            aggregateRoot
+
+            - NameComponent firstName
+            - NameComponent lastName
+            - Email ^email
+
+            def @Customer updateData(@Email ^email, @NameComponent firstName, @NameComponent lastName, @Username username);
+
+            def @Customer updatePassword(@Password oldPassword, @Password newPassword);
+
+            def boolean verifyCredentials(@Password password);
+
+            Repository CustomerRepository {
+
+                @Customer findByEmail(@Email ^email);
+
+                @Customer add(@Customer customer, @Password password);
+
+                void ^update(@Customer customer, @Password password);
+
+                void remove(@Email ^email);
+            }
+        }
+
+        ValueObject Email {
+            String ^email
+        }
+
+        ValueObject NameComponent {
+            String nameComponent
+        }
+
+        DomainEvent CustomerUnregistered {
+            - Email ^email
+        }
+
+        Service CustomerRegistrationService {
+
+            @Customer register(@NameComponent firstName, @NameComponent lastName, @Email ^email, @Username username, @Password password);
+
+            void unregisterCustomer(@Email ^email);
+
+            @Customer updateData(@Email ^email, @NameComponent newFirstName, @NameComponent newLastName, @Email newEmail, @Username newUsername);
+
+            @Customer updatePassword(@Email ^email, @Password oldPassword, @Password newPassword);
+        }
+
+        Service CustomerLoginService {
+
+            boolean verifyCredentials(@Email ^email, @Password password);
+        }
+    }
+
+    Aggregate StoreManager {
+
+        Entity StoreManager extends User {
+            aggregateRoot
+
+            - Store store
+
+            def @StoreManager moveToStore(@Store store);
+
+            def @StoreManager updatePassword(@Password oldPassword, @Password newPassword);
+
+            def boolean verifyCredentials(@Password password);
+
+            Repository StoreManagerRepository {
+
+                @StoreManager findByUsername(@Username username);
+
+                @StoreManager add(@StoreManager storeManager, @Password password);
+
+                void ^update(@StoreManager storeManager, @Password password);
+
+                void remove(@Username username);
+            }
+        }
+
+        ValueObject Store {
+            long id
+        }
+
+        Service StoreManagerRegistrationService {
+
+            @StoreManager register(@Username username, @Password password, @Store store);
+
+            void unregister(@Username username);
+
+            @StoreManager moveToStore(@Username username, @Store newStore);
+
+            @StoreManager updatePassword(@Username username, @Password oldPassword, @Password newPassword);
+        }
+
+        Service StoreManagerLoginService {
+
+            boolean verifyCredentials(@Username username, @Password password);
+        }
+    }
+
+    Aggregate Administration {
+
+        Entity Administration extends User {
+            aggregateRoot
+
+            def @Administration updatePassword(@Password oldPassword, @Password newPassword);
+
+            def verifyCredentials(@Password password);
+
+            Repository AdministrationRepository {
+
+                @Administration findByUsername(@Username username);
+
+                void ^update(@Administration administration);
+            }
+        }
+
+        Service AdministrationRegistrationService {
+
+            @Administration updatePassword(@Username username, @Password oldPassword, @Password newPassword);
+        }
+
+        Service AdministrationLoginService {
+
+            boolean verifyCredentials(@Username username, @Password password);
+        }
+    }
+}

@@ -1,0 +1,209 @@
+import "domain.cml"
+
+BoundedContext StoresContext implements StoresDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for shops: layout, anti-theft system and drop system."
+    implementationTechnology "Akka actor"
+    responsibilities "Stores", "Anti-theft System", "Drop System", "Shelvings Groups", "Shelvings", "Shelves", "Items Rows"
+
+    Aggregate Store {
+
+        Entity Store {
+            aggregateRoot
+
+            - StoreId storeId
+            - List<ShelvingGroup> layout
+
+            def @Store addShelvingGroup(@ShelvingGroup shelvingGroup);
+
+            def @Store removeShelvingGroup(@ShelvingGroupId shelvingGroupId);
+
+            def @Store updateShelvingGroup(@ShelvingGroup shelvingGroup);
+
+            Repository StoresRepository {
+
+                @Store findById(@StoreId storeId);
+
+                void ^update(@Store store);
+            }
+        }
+
+        ValueObject StoreId {
+            long id
+        }
+
+        ValueObject ShelvingGroup {
+
+            - ShelvingGroupId shelvingGroupId
+            - List<Shelving> shelvings
+
+            def @ShelvingGroup addShelving(@Shelving shelving);
+
+            def @ShelvingGroup removeShelving(@ShelvingId shelvingId);
+
+            def @ShelvingGroup updateShelving(@Shelving shelving);
+        }
+
+        ValueObject ShelvingGroupId {
+            long id
+        }
+
+        ValueObject Shelving {
+
+            - ShelvingId shelvingId
+            - List<Shelf> shelves
+
+            def @Shelving addShelf(@Shelf shelf);
+
+            def @Shelving removeShelf(@ShelfId shelfId);
+
+            def @Shelving updateShelf(@ShelfId shelfId);
+        }
+
+        ValueObject ShelvingId {
+            long id
+        }
+
+        ValueObject Shelf {
+
+            - ShelfId shelfId
+            - List<ItemsRow> itemsRows
+
+            def @Shelf addItemsRow(@ItemsRow itemsRow);
+
+            def @Shelf removeItemsRow(@ItemsRowId itemsRowId);
+
+            def @Shelf updateItemsRow(@ItemsRow itemsRow);
+        }
+
+        ValueObject ShelfId {
+            long id
+        }
+
+        ValueObject ItemsRow {
+
+            - ItemsRowId itemsRowId
+            - ItemCategory itemCategory
+            - Count count
+
+            def @ItemsRow updated(@ItemCategory itemCategory, @Count count);
+        }
+
+        ValueObject ItemsRowId {
+            long id
+        }
+
+        ValueObject ItemCategory {
+            long id
+        }
+
+        ValueObject Count {
+            int count
+        }
+
+        ValueObject Item {
+            long id
+        }
+
+        DomainEvent ItemInsertedInDropSystem {
+            - Item item
+            - ItemCategory itemCategory
+            - StoreId storeId
+        }
+
+        DomainEvent ItemReturned {
+            - Item item
+            - ItemCategory itemCategory
+            - StoreId storeId
+        }
+
+        DomainEvent ItemPutInPlace {
+            - ItemCategory itemCategory
+            - StoreId storeId
+            - Item item
+        }
+
+        DomainEvent ItemCategoryLifted {
+            - StoreId storeId
+            - ShelvingGroupId shelvingGroupId
+            - ShelvingId shelvingId
+            - ShelfId shelfId
+            - ItemsRowId itemsRowId
+        }
+
+        DomainEvent CatalogItemLifted {
+            - ItemCategory itemCategory
+            - Store storeId
+        }
+
+        DomainEvent CatalogItemPutInPlace {
+            - ItemCategory itemCategory
+            - StoreId storeId
+        }
+
+        DomainEvent ItemDetected {
+            - Item item
+            - ItemCategory itemCategory
+            - StoreId storeId
+        }
+
+        DomainEvent ItemStolenAlarmRaised
+
+        Service LayoutDisplayService {
+
+            List<@ShelvingGroup> layoutForStore(@StoreId storeId);
+
+            boolean existsLayoutWithItem(@StoreId storeId, @ItemCategory itemCategory, @Item item);
+
+            void putCatalogItemInPlace(@StoreId storeId, @ItemCategory itemCategory);
+        }
+
+        Service ShelvingGroupsService {
+
+            List<@ShelvingGroup> addShelvingGroup(@StoreId storeId, List<@Shelving> shelvingGroup);
+
+            List<@ShelvingGroup> removeShelvingGroup(@StoreId storeId, @ShelvingGroupId shelvingGroupId);
+
+            List<@ShelvingGroup> updateShelvingGroup(@StoreId storeId, @ShelvingGroupId shelvingGroupId, List<@Shelving> shelvingGroup);
+        }
+
+        Service ShelvingsService {
+
+            List<@ShelvingGroup> addShelving(@StoreId storeId, @ShelvingGroupId shelvingGroupId, List<@Shelf> shelving);
+
+            List<@ShelvingGroup> removeShelving(@StoreId storeId, @ShelvingGroupId shelvingGroupId, @ShelvingId shelvingId);
+
+            List<@ShelvingGroup> updateShelving(@StoreId storeId, @ShelvingGroupId shelvingGroupId, @ShelvingId shelvingId, List<@Shelf> shelving);
+        }
+
+        Service ShelvesService {
+
+            List<@ShelvingGroup> addShelf(@StoreId storeId, @ShelvingGroupId shelvingGroupId, @ShelvingId shelvingIdList, List<@ItemsRow> shelf);
+
+            List<@ShelvingGroup> removeShelf(@StoreId storeId, @ShelvingGroupId shelvingGroupId, @ShelvingId shelvingIdList, @ShelfId shelfId);
+
+            List<@ShelvingGroup> updateShelf(@StoreId storeId, @ShelvingGroupId shelvingGroupId, @ShelvingId shelvingIdList, @ShelfId shelfId, List<@ItemsRow> shelf);
+        }
+
+        Service ItemsRowsService {
+
+            List<@ShelvingGroup> addItemsRow(@StoreId storeId, @ShelvingGroupId shelvingGroupId, @ShelvingId shelvingIdList, @ShelfId shelfId, @ItemsRow itemsRow);
+            
+            List<@ShelvingGroup> removeItemsRow(@StoreId storeId, @ShelvingGroupId shelvingGroupId, @ShelvingId shelvingIdList, @ShelfId shelfId, @ItemsRowId itemsRowId);
+
+            List<@ShelvingGroup> updateItemsRow(@StoreId storeId, @ShelvingGroupId shelvingGroupId, @ShelvingId shelvingIdList, @ShelfId shelfId, @ItemsRowId itemsRowId, @ItemCategory itemCategory, @Count count);
+        }
+
+        Service ItemStateHandlers {
+
+            void onItemInserted(@ItemInsertedInDropSystem ^event);
+
+            void onItemReturned(@ItemReturned ^event);
+
+            void onItemCategoryLifted(@ItemCategoryLifted ^event);
+
+            void onItemDetected(@ItemDetected ^event);
+        }
+    }
+}

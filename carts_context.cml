@@ -1,0 +1,141 @@
+import "domain.cml"
+
+BoundedContext CartsContext implements CartsDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for managing smart carts state."
+    implementationTechnology "Akka actor"
+    responsibilities "Carts"
+
+    Aggregate Cart {
+
+        abstract Entity Cart {
+            aggregateRoot
+
+            - CartId cartId
+            - Store store
+
+            Repository CartRepository {
+
+                @Cart findById(@CartId cartId, @Store store);
+
+                Set<@Cart> findByStore(@Store store);
+
+                @Cart add(@CartId cartId, @Store store);
+
+                void ^update(@Cart cart);
+
+                void remove(@CartId cartId, @Store store);
+            }
+        }
+
+        Entity LockedCart extends Cart {
+
+            def @UnlockedCart unlock();
+
+            def @AssociatedCart associateTo(@Customer customer);
+        }
+
+        Entity UnlockedCart extends Cart {
+
+            def @LockedCart lock();
+
+            def @AssociatedCart associateTo(@Customer customer);
+        }
+
+        Entity AssociatedCart extends Cart {
+
+            - Customer customer
+
+            def @LockedCart lock();
+
+            def void addItemToCart(@ItemCategory itemCategory, @Item item);
+        }
+
+        ValueObject CartId {
+            long id
+        }
+
+        ValueObject Store {
+            long id
+        }
+
+        ValueObject Customer {
+            String ^email
+        }
+
+        ValueObject ItemCategory {
+            long id
+        }
+
+        ValueObject Item {
+            long id
+        }
+
+        DomainEvent CartAssociationRequested {
+            - CartId cartId
+            - Customer customer
+        }
+
+        DomainEvent CartAssociated {
+            - CartId cartId
+            - Store store
+            - Customer customer
+        }
+
+        DomainEvent ItemInsertedIntoCart {
+            - CartId cartId
+            - Store store
+            - ItemCategory itemCategory
+            - Item item
+        }
+
+        DomainEvent ItemAddedToCart {
+            - Customer customer
+            - Store store
+            - ItemCategory itemCategory
+            - Item item
+        }
+
+        DomainEvent CartMovedAlarmRaised {
+            - CartId cartId
+            - Store store
+        }
+
+        DomainEvent ItemAddedAlarmRaised {
+            - CartId cartId
+            - Store store
+        }
+
+        DomainEvent CustomerUnregistered {
+            - Customer customer
+        }
+
+        Service CartStateService {
+
+            @UnlockedCart unlock(@CartId cartId, @Store store);
+
+            @AssociatedCart associateTo(@CartId cartId, @Store store, @Customer customer);
+
+            @LockedCart lock(@CartId cartId, @Store store);
+
+            void moveCart(@Store store, @CartId cartId);
+        }
+
+        Service CartService {
+
+            Set<@Cart> findByStore(@Store store);
+
+            void addItemToCart(@Store store, @CartId cartId, @ItemCategory itemCategory, @Item item);
+
+            @Cart add(@CartId cartId, @Store store);
+
+            void remove(@CartId cartId, @Store store);
+        }
+
+        Service CustomerStateHandlersService {
+
+            void onCustomerUnregistered(@CustomerUnregistered ^event);
+        }
+    }
+}

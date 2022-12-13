@@ -1,0 +1,184 @@
+import "domain.cml"
+
+BoundedContext PaymentsContext implements PaymentsDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for managing payments by customers for purchases."
+    implementationTechnology "Akka actor"
+    responsibilities "Purchases", "Payments"
+
+    Aggregate Customer {
+
+        Entity Customer {
+            aggregateRoot
+
+            - CustomerEmail ^email
+            - PaymentCard paymentCard
+
+            def @Customer updated(@CustomerEmail ^email, @PaymentCard paymentCard);
+
+            Repository CustomerRepository {
+
+                @Customer findByEmail(@CustomerEmail ^email);
+
+                @Customer add(@CustomerEmail ^email, @PaymentCard paymentCard);
+
+                void ^update(@Customer customer);
+
+                void remove(@CustomerEmail ^email);
+            }
+        }
+
+        ValueObject CustomerEmail {
+            String ^email
+        }
+
+        ValueObject PaymentCard {
+            - CardNumber cardNumber
+            - CardSecurityCode cardSecurityCode
+            - CardHolder cardHolder
+        }
+
+        ValueObject CardNumber {
+            String cardNumber
+        }
+
+        ValueObject CardSecurityCode {
+            String cardSecurityCode
+        }
+
+        ValueObject CardHolder {
+            String cardHolder
+        }
+
+        DomainEvent CustomerUnregistered {
+            - CustomerEmail ^email
+        }
+
+        Service CustomerService {
+
+            @Customer add(@CustomerEmail ^email, @PaymentCard paymentCard);
+
+            @Customer ^update(@CustomerEmail ^email, @CustomerEmail newEmail, @PaymentCard newPaymentCard);
+
+            void remove(@CustomerEmail ^email);
+        }
+
+        Service CustomerStateHandlers {
+
+            void onCustomerDeleted(@CustomerUnregistered ^event);
+        }
+    }
+
+    Aggregate Purchase {
+
+        Entity Purchase {
+            aggregateRoot
+
+            - PurchaseId purchaseId
+            - List<Item> cartContents
+            - Store store
+            - Customer customer
+            Timestamp timestamp
+
+            Repository PurchaseRepository {
+
+                @Purchase findById(@PurchaseId id);
+
+                Set<@Purchase> findByCustomer(@CustomerEmail ^email);
+
+                Set<@Purchase> findByStore(@Store store);
+
+                List<@Purchase> findByDateRange(Timestamp startDate, Timestamp endDate);
+
+                @Purchase add(List<@Item> cartContents, @Store store, @Customer customer);
+            }
+        }
+
+        ValueObject PurchaseId {
+            long id
+        }
+
+        ValueObject Store {
+            long id
+        }
+
+        ValueObject Item {
+            - ItemCategoryId itemCategoryId
+            - ItemId itemId
+        }
+
+        ValueObject ItemCategoryId {
+            long id
+        }
+
+        ValueObject ItemId {
+            long id
+        }
+
+        Service PurchaseService {
+
+            Set<@Purchase> findByCustomer(@CustomerEmail ^email);
+
+            List<@Purchase> findByDateRange(Timestamp startDate, Timestamp endDate);
+
+            void add(List<@Item> cartContents, @CustomerEmail customerEmail);
+        }
+    }
+
+    Aggregate Payment {
+
+        abstract Entity Payment {
+            aggregateRoot
+
+            - PaymentId paymentId
+            - Purchase purchase
+            Timestamp timestamp
+
+            Repository PaymentRepository {
+
+                @Payment findById(@PaymentId id);
+
+                Set<@Payment> findByCustomer(@CustomerEmail ^email);
+
+                List<@Purchase> findByDateRange(Timestamp startDate, Timestamp endDate);
+
+                @Payment add(@Purchase purchase);
+            }
+        }
+
+        Entity StartedPayment extends Payment {
+
+            def @TerminatedPayment pay();
+        }
+
+        abstract Entity TerminatedPayment extends Payment
+
+        Entity SuccessfulPayment extends TerminatedPayment
+
+        Entity FailedPayment extends TerminatedPayment
+
+        ValueObject PaymentId {
+            long id
+        }
+
+        DomainEvent PaymentHadSuccess {
+            - PaymentId paymentId
+        }
+
+        DomainEvent PaymentHasFailed {
+            - PaymentId paymentId
+        }
+
+        Service PaymentService {
+
+            Set<@Payment> findByCustomer(@CustomerEmail ^email);
+
+            List<@Payment> findByDateRange(Timestamp startDate, Timestamp endDate);
+
+            void terminatePaymentWithSuccess(@PaymentId id);
+
+            void terminatePaymentWithFailure(@PaymentId id);
+        }
+    }
+}

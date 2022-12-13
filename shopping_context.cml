@@ -1,0 +1,174 @@
+import "domain.cml"
+
+BoundedContext ShoppingContext implements ShoppingDomain {
+    type FEATURE
+    knowledgeLevel CONCRETE
+    domainVisionStatement "Bounded context responsible for managing the shopping process which allows a customer to shop in a store."
+    implementationTechnology "Akka actor"
+    responsibilities "Shopping Process", "Cart Contents"
+
+    Aggregate ShoppingProcess {
+
+        abstract Entity ShoppingProcess {
+            aggregateRoot
+
+            - Customer customer
+
+            Repository ShoppingProcessRepository {
+
+                @ShoppingProcess findByCustomer(@Customer customer);
+
+                boolean existsShoppingProcessWithItem(@Store store, @ItemCategory itemCategory, @ItemId itemId);
+
+                void ^update(@ShoppingProcess shoppingProcess);
+            }
+        }
+
+        Entity NotStartedShoppingProcess extends ShoppingProcess {
+
+            def @StartingShoppingProcess customerEntersStore(@Store store);
+        }
+
+        Entity StartingShoppingProcess extends ShoppingProcess {
+            - Store store
+
+            def @StartedShoppingProcess associateCart(@Cart cart);
+        }
+
+        Entity StartedShoppingProcess extends ShoppingProcess {
+            - Store store
+            - Cart cart
+            - Set<@Item> cartContents
+
+            def @StartedShoppingProcess addItemToCart(@Item item);
+
+            def @StartedShoppingProcess removeItemFromCart(@Item item);
+
+            def @TerminatingShoppingProcess customerLeavesStore();
+        }
+
+        Entity TerminatingShoppingProcess extends ShoppingProcess {
+
+            def @TerminatedShoppingProcess timeoutIsReached();
+        }
+
+        Entity TerminatedShoppingProcess extends ShoppingProcess {
+
+            def @NotStartedShoppingProcess customerPaid();
+        }
+
+        ValueObject Customer {
+            String ^email
+        }
+
+        ValueObject Store {
+            long id
+        }
+
+        ValueObject Cart {
+            long id
+        }
+
+        ValueObject Item {
+            - ItemCategory itemCategory
+            - ItemId itemId
+            - Count count
+        }
+
+        ValueObject ItemCategory {
+            long id
+        }
+
+        ValueObject ItemId {
+            long id
+        }
+
+        ValueObject Count {
+            int count
+        }
+
+        DomainEvent CustomerHasEnteredStore {
+            - Customer customer
+            - Store store
+        }
+
+        DomainEvent CartAssociated {
+            - Customer customer
+            - Cart cart
+        }
+
+        DomainEvent CustomerHasLeftStore {
+            - Customer customer
+        }
+
+        DomainEvent TimeoutWasReached {
+            - Customer customer
+        }
+
+        DomainEvent CustomerHasPaid {
+            - Customer customer
+        }
+
+        DomainEvent ItemAddedToCart {
+            - Customer customer
+            - ItemCategory itemCategory
+            - ItemId itemId
+            - Store store
+        }
+
+        DomainEvent ItemReturned {
+            - Store store
+            - ItemCategory itemCategory
+            - ItemId itemId
+        }
+
+        DomainEvent CustomerUnregistered {
+            - Customer customer
+        }
+
+        Service ShoppingProcessHandlers {
+
+            void onShoppingProcessStarting(@CustomerHasEnteredStore ^event);
+            
+            void onShoppingProcessStarted(@CartAssociated ^event);
+            
+            void onShoppingProcessTerminating(@CustomerHasLeftStore ^event);
+
+            void onShoppingProcessTerminated(@TimeoutWasReached ^event);
+
+            void onShoppingProcessRestart(@CustomerHasPaid ^event);
+
+            void onItemAddedToCart(@ItemAddedToCart ^event);
+            
+            void onItemRemoved(@ItemReturned ^event); 
+            
+            void onCustomerUnregistered(@CustomerUnregistered ^event);
+        }
+
+        Service ShoppingProcessService {
+
+            @ShoppingProcess findByCustomer(@Customer customer);
+
+            boolean existsShoppingProcessWithItem(@Store store, @ItemCategory itemCategory, @ItemId itemId);
+
+            @StartingShoppingProcess customerEntersStore(@Customer customer, @Store store);
+
+            @StartedShoppingProcess associateCart(@Customer customer, @Cart cart);
+
+            @TerminatingShoppingProcess customerLeavesStore(@Customer customer);
+
+            @TerminatedShoppingProcess timeoutIsReached(@Customer customer);
+
+            @NotStartedShoppingProcess customerPaid(@Customer customer);
+        }
+
+        Service CartContentsService {
+
+            Set<@Item> findCartsContentsForCustomer(@Customer customer);
+
+            Set<@Item> addItemToCart(@Item item);
+
+            Set<@Item> removeItemFromCart(@Item item);
+        }
+    }
+}
