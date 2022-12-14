@@ -29,7 +29,7 @@ BoundedContext UsersContext implements UsersDomain {
             String encryptedPassword
         }
 
-        Service PasswordService {
+        Service PasswordAlgorithm {
 
             boolean check(@EncryptedPassword expectedPassword, @EncryptedPassword actualPassword);
 
