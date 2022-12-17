@@ -31,7 +31,7 @@ BoundedContext UsersContext implements UsersDomain {
 
         Service PasswordAlgorithm {
 
-            boolean check(@EncryptedPassword expectedPassword, @EncryptedPassword actualPassword);
+            boolean check(@EncryptedPassword expectedPassword, @PlainPassword actualPassword);
 
             @EncryptedPassword encrypt(@PlainPassword plainPassword);
         }
