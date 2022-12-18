@@ -64,6 +64,15 @@ BoundedContext CartsContext implements CartsDomain {
         }
 
         ValueObject Item {
+            - ItemCategory itemCategory
+            - ItemId id
+        }
+
+        ValueObject ItemCategory {
+            long id
+        }
+
+        ValueObject ItemId {
             long id
         }
 

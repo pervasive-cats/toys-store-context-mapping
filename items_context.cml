@@ -22,11 +22,11 @@ BoundedContext ItemsContext implements ItemsDomain {
 
                 @ItemCategory findById(@ItemCategoryId id);
 
-                @ItemCategory add(@Name name, @Description description);
+                void add(@Name name, @Description description);
 
-                void ^update(@ItemCategory itemCategory);
+                void ^update(@ItemCategory itemCategory, @Name name, @Description description);
 
-                void remove(@ItemCategoryId id);
+                void remove(@ItemCategory itemCategory);
             }
         }
 
@@ -41,15 +41,6 @@ BoundedContext ItemsContext implements ItemsDomain {
         ValueObject Description {
             String description
         }
-
-        Service ItemCategoryService {
-
-            @ItemCategory add(@Name name, @Description description);
-
-            @ItemCategory ^update(@ItemCategoryId id, @Name newName, @Description newDescription);
-
-            void remove(@ItemCategoryId id);
-        }
     }
 
     Aggregate CatalogItem {
@@ -57,6 +48,7 @@ BoundedContext ItemsContext implements ItemsDomain {
         abstract Entity CatalogItem {
             aggregateRoot
 
+            - CatalogItemId id
             - ItemCategory category
             - Store store
             - Price price
@@ -65,15 +57,15 @@ BoundedContext ItemsContext implements ItemsDomain {
 
             Repository CatalogItemRepository {
 
-                @CatalogItem findById(@ItemCategoryId itemCategoryId, @Store storeId);
+                @CatalogItem findById(@CatalogItemId catalogItemId, @Store store);
 
                 Set<@LiftedCatalogItem> findAllLifted();
 
-                @CatalogItem add(@ItemCategory category, @Store store, @Price price);
+                void add(@CatalogItem catalogItem);
 
-                void ^update(@CatalogItem catalogItem);
+                void ^update(@CatalogItem catalogItem, @Price price);
 
-                void remove(@ItemCategoryId itemCategoryId, @Store storeId);
+                void remove(@CatalogItem catalogItem);
             }
         }
 
@@ -85,6 +77,10 @@ BoundedContext ItemsContext implements ItemsDomain {
         Entity LiftedCatalogItem extends CatalogItem {
 
             def @InPlaceCatalogItem putInPlace();
+        }
+
+        ValueObject CatalogItemId {
+            long id
         }
 
         ValueObject Store {
@@ -103,26 +99,13 @@ BoundedContext ItemsContext implements ItemsDomain {
         ValueObject Currency
 
         DomainEvent CatalogItemPutInPlace {
-            - ItemCategoryId itemCategoryId
+            - CatalogItemId catalogItemId
             - Store store
         }
 
         DomainEvent CatalogItemLifted {
-            - ItemCategoryId itemCategoryId
+            - CatalogItemId catalogItemId
             - Store store
-        }
-
-        Service CatalogItemService {
-
-            @CatalogItem findById(@ItemCategoryId itemCategoryId, @Store store);
-
-            Set<@LiftedCatalogItem> findAllLifted();
-
-            @CatalogItem add(@ItemCategory category, @Store store, @Price price);
-
-            @CatalogItem ^update(@ItemCategoryId itemCategoryId, @Store store, @Price price);
-
-            void remove(@ItemCategoryId itemCategoryId, @Store store);
         }
 
         Service CatalogItemStateHandlersService {
@@ -143,13 +126,15 @@ BoundedContext ItemsContext implements ItemsDomain {
 
             Repository ItemRepository {
 
-                @Item findById(@ItemId itemId, @ItemCategoryId itemCategoryId, @Store storeId);
+                @Item findById(@ItemId itemId, @CatalogItemId catalogItemId, @Store store);
 
                 Set<@ReturnedItem> findAllReturned();
 
-                @Item add(@ItemId id, @CatalogItem kind);
+                void add(@Item item);
 
-                void remove(@ItemId id, @ItemCategoryId itemCategoryId, @Store storeId);
+                void ^update(@Item item);
+
+                void remove(@Item item);
             }
         }
 
@@ -177,35 +162,22 @@ BoundedContext ItemsContext implements ItemsDomain {
         }
 
         DomainEvent ItemAddedToCart {
-            - ItemCategoryId itemCategoryId
+            - CatalogItemId catalogItemId
             - Store store
             - ItemId itemId
             - Customer customer
         }
 
         DomainEvent ItemReturned {
-            - ItemCategoryId itemCategoryId
+            - CatalogItemId catalogItemId
             - Store store
             - ItemId itemId
         }
 
         DomainEvent ItemPutInPlace {
-            - ItemCategoryId itemCategoryId
+            - CatalogItemId catalogItemId
             - Store store
             - ItemId itemId
-        }
-
-        Service ItemService {
-
-            @Item findById(@ItemId itemId, @ItemCategoryId itemCategoryId, @Store storeId);
-
-            Set<@ReturnedItem> findAllReturned();
-
-            @Item add(@ItemId id, @CatalogItem kind);
-
-            void remove(@ItemId itemId, @ItemCategoryId itemCategoryId, @Store storeId);
-
-            void buy(@ItemId itemId, @ItemCategoryId itemCategoryId, @Store storeId);
         }
 
         Service ItemStateHandlersService {
