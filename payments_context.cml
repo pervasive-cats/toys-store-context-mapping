@@ -67,7 +67,7 @@ BoundedContext PaymentsContext implements PaymentsDomain {
             aggregateRoot
 
             - PurchaseId purchaseId
-            - List<Item> cartContents
+            - List<CatalogItem> cartContents
             - Store store
             - Customer customer
             Timestamp timestamp
@@ -96,18 +96,25 @@ BoundedContext PaymentsContext implements PaymentsDomain {
             long id
         }
 
-        ValueObject Item {
-            - CatalogItem catalogItem
-            - ItemId itemId
-        }
-
         ValueObject CatalogItem {
+            - CatalogItemId catalogItemId
+            - Cost cost
+        }
+
+        ValueObject CatalogItemId {
             long id
         }
 
-        ValueObject ItemId {
-            long id
+        ValueObject Cost {
+            - Amount amount
+            - Currency currency
         }
+
+        ValueObject Amount {
+            int amount
+        }
+
+        ValueObject Currency
     }
 
     Aggregate Payment {
