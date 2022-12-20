@@ -12,24 +12,24 @@ BoundedContext PaymentsContext implements PaymentsDomain {
         Entity Customer {
             aggregateRoot
 
-            - CustomerEmail ^email
+            - Email ^email
             - PaymentCard paymentCard
 
-            def @Customer updated(@CustomerEmail ^email, @PaymentCard paymentCard);
+            def @Customer updateData(@Email ^email, @PaymentCard paymentCard);
 
             Repository CustomerRepository {
 
-                @Customer findByEmail(@CustomerEmail ^email);
+                @Customer findByEmail(@Email ^email);
 
-                @Customer add(@CustomerEmail ^email, @PaymentCard paymentCard);
+                void register(@Customer customer);
 
-                void ^update(@Customer customer);
+                void updateData(@Customer customer, @Email ^email, @PaymentCard paymentCard);
 
-                void remove(@CustomerEmail ^email);
+                void unregister(@Customer customer);
             }
         }
 
-        ValueObject CustomerEmail {
+        ValueObject Email {
             String ^email
         }
 
@@ -52,21 +52,12 @@ BoundedContext PaymentsContext implements PaymentsDomain {
         }
 
         DomainEvent CustomerUnregistered {
-            - CustomerEmail ^email
-        }
-
-        Service CustomerService {
-
-            @Customer add(@CustomerEmail ^email, @PaymentCard paymentCard);
-
-            @Customer ^update(@CustomerEmail ^email, @CustomerEmail newEmail, @PaymentCard newPaymentCard);
-
-            void remove(@CustomerEmail ^email);
+            - Email ^email
         }
 
         Service CustomerStateHandlers {
 
-            void onCustomerDeleted(@CustomerUnregistered ^event);
+            void onCustomerUnregistered(@CustomerUnregistered ^event);
         }
     }
 
@@ -85,13 +76,15 @@ BoundedContext PaymentsContext implements PaymentsDomain {
 
                 @Purchase findById(@PurchaseId id);
 
-                Set<@Purchase> findByCustomer(@CustomerEmail ^email);
+                List<@Purchase> findByEmail(@Email ^email);
 
-                Set<@Purchase> findByStore(@Store store);
+                List<@Purchase> findByStore(@Store store);
 
                 List<@Purchase> findByDateRange(Timestamp startDate, Timestamp endDate);
 
-                @Purchase add(List<@Item> cartContents, @Store store, @Customer customer);
+                void add(@Purchase purchase);
+
+                void remove(@Purchase purchase);
             }
         }
 
@@ -104,25 +97,16 @@ BoundedContext PaymentsContext implements PaymentsDomain {
         }
 
         ValueObject Item {
-            - ItemCategoryId itemCategoryId
+            - CatalogItem catalogItem
             - ItemId itemId
         }
 
-        ValueObject ItemCategoryId {
+        ValueObject CatalogItem {
             long id
         }
 
         ValueObject ItemId {
             long id
-        }
-
-        Service PurchaseService {
-
-            Set<@Purchase> findByCustomer(@CustomerEmail ^email);
-
-            List<@Purchase> findByDateRange(Timestamp startDate, Timestamp endDate);
-
-            void add(List<@Item> cartContents, @CustomerEmail customerEmail);
         }
     }
 
@@ -139,17 +123,21 @@ BoundedContext PaymentsContext implements PaymentsDomain {
 
                 @Payment findById(@PaymentId id);
 
-                Set<@Payment> findByCustomer(@CustomerEmail ^email);
+                List<@Payment> findByCustomer(@Email ^email);
 
                 List<@Purchase> findByDateRange(Timestamp startDate, Timestamp endDate);
 
-                @Payment add(@Purchase purchase);
+                void add(@Purchase purchase);
+
+                void remove(@Purchase purchase);
             }
         }
 
         Entity StartedPayment extends Payment {
 
-            def @TerminatedPayment pay();
+            def @SuccessfulPayment payWithSuccess();
+
+            def @FailedPayment payWithFailure();
         }
 
         abstract Entity TerminatedPayment extends Payment
@@ -162,23 +150,19 @@ BoundedContext PaymentsContext implements PaymentsDomain {
             long id
         }
 
-        DomainEvent PaymentHadSuccess {
+        DomainEvent PaymentSucceeded {
             - PaymentId paymentId
         }
 
-        DomainEvent PaymentHasFailed {
+        DomainEvent PaymentFailed {
             - PaymentId paymentId
         }
 
-        Service PaymentService {
+        Service PaymentTerminationHandlers {
 
-            Set<@Payment> findByCustomer(@CustomerEmail ^email);
+            void onPaymentSucceeded(@PaymentSucceeded ^event);
 
-            List<@Payment> findByDateRange(Timestamp startDate, Timestamp endDate);
-
-            void terminatePaymentWithSuccess(@PaymentId id);
-
-            void terminatePaymentWithFailure(@PaymentId id);
+            void onPaymentFailed(@PaymentFailed ^event);
         }
     }
 }

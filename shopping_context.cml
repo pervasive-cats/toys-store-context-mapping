@@ -18,7 +18,9 @@ BoundedContext ShoppingContext implements ShoppingDomain {
 
                 @ShoppingProcess findByCustomer(@Customer customer);
 
-                boolean existsShoppingProcessWithItem(@Store store, @ItemCategory itemCategory, @ItemId itemId);
+                boolean existsShoppingProcessWithItem(@Store store, @CatalogItem catalogItem, @ItemId itemId);
+
+                void add(@ShoppingProcess shoppingProcess);
 
                 void ^update(@ShoppingProcess shoppingProcess);
             }
@@ -38,7 +40,7 @@ BoundedContext ShoppingContext implements ShoppingDomain {
         Entity StartedShoppingProcess extends ShoppingProcess {
             - Store store
             - Cart cart
-            - Set<@Item> cartContents
+            - List<@Item> cartContents
 
             def @StartedShoppingProcess addItemToCart(@Item item);
 
@@ -70,12 +72,12 @@ BoundedContext ShoppingContext implements ShoppingDomain {
         }
 
         ValueObject Item {
-            - ItemCategory itemCategory
+            - CatalogItem catalogItem
             - ItemId itemId
             - Count count
         }
 
-        ValueObject ItemCategory {
+        ValueObject CatalogItem {
             long id
         }
 
@@ -95,6 +97,7 @@ BoundedContext ShoppingContext implements ShoppingDomain {
         DomainEvent CartAssociated {
             - Customer customer
             - Cart cart
+            - Store store
         }
 
         DomainEvent CustomerHasLeftStore {
@@ -111,14 +114,14 @@ BoundedContext ShoppingContext implements ShoppingDomain {
 
         DomainEvent ItemAddedToCart {
             - Customer customer
-            - ItemCategory itemCategory
+            - CatalogItem catalogItem
             - ItemId itemId
             - Store store
         }
 
         DomainEvent ItemReturned {
             - Store store
-            - ItemCategory itemCategory
+            - CatalogItem catalogItem
             - ItemId itemId
         }
 
@@ -128,47 +131,24 @@ BoundedContext ShoppingContext implements ShoppingDomain {
 
         Service ShoppingProcessHandlers {
 
-            void onShoppingProcessStarting(@CustomerHasEnteredStore ^event);
+            void onCustomerHasEnteredStore(@CustomerHasEnteredStore ^event);
             
-            void onShoppingProcessStarted(@CartAssociated ^event);
+            void onCartAssociated(@CartAssociated ^event);
             
-            void onShoppingProcessTerminating(@CustomerHasLeftStore ^event);
+            void onCustomerHasLeftStore(@CustomerHasLeftStore ^event);
 
-            void onShoppingProcessTerminated(@TimeoutWasReached ^event);
+            void onTimeoutWasReached(@TimeoutWasReached ^event);
 
-            void onShoppingProcessRestart(@CustomerHasPaid ^event);
+            void onCustomerHasPaid(@CustomerHasPaid ^event);
 
             void onItemAddedToCart(@ItemAddedToCart ^event);
             
-            void onItemRemoved(@ItemReturned ^event); 
-            
+            void onItemReturned(@ItemReturned ^event);
+        }
+
+        Service CustomerStateHandlers {
+
             void onCustomerUnregistered(@CustomerUnregistered ^event);
-        }
-
-        Service ShoppingProcessService {
-
-            @ShoppingProcess findByCustomer(@Customer customer);
-
-            boolean existsShoppingProcessWithItem(@Store store, @ItemCategory itemCategory, @ItemId itemId);
-
-            @StartingShoppingProcess customerEntersStore(@Customer customer, @Store store);
-
-            @StartedShoppingProcess associateCart(@Customer customer, @Cart cart);
-
-            @TerminatingShoppingProcess customerLeavesStore(@Customer customer);
-
-            @TerminatedShoppingProcess timeoutIsReached(@Customer customer);
-
-            @NotStartedShoppingProcess customerPaid(@Customer customer);
-        }
-
-        Service CartContentsService {
-
-            Set<@Item> findCartsContentsForCustomer(@Customer customer);
-
-            Set<@Item> addItemToCart(@Item item);
-
-            Set<@Item> removeItemFromCart(@Item item);
         }
     }
 }

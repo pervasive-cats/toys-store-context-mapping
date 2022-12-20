@@ -112,18 +112,21 @@ BoundedContext StoresContext implements StoresDomain {
         }
 
         DomainEvent ItemInsertedInDropSystem {
-            - Item item
+            - CatalogItem catalogItem
+            - ItemId id
             - StoreId storeId
         }
 
         DomainEvent ItemReturned {
-            - Item item
+            - CatalogItem catalogItem
+            - ItemId id
             - StoreId storeId
         }
 
         DomainEvent ItemPutInPlace {
             - StoreId storeId
-            - Item item
+            - CatalogItem catalogItem
+            - ItemId id
         }
 
         DomainEvent CatalogItemLiftingRegistered {

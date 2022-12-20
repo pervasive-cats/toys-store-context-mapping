@@ -85,13 +85,15 @@ BoundedContext CartsContext implements CartsDomain {
         DomainEvent ItemInsertedIntoCart {
             - CartId cartId
             - Store store
-            - Item item
+            - ItemCategory itemCategory
+            - ItemId id
         }
 
         DomainEvent ItemAddedToCart {
             - Customer customer
             - Store store
-            - Item item
+            - ItemCategory itemCategory
+            - ItemId id
         }
 
         DomainEvent CartMoved {
