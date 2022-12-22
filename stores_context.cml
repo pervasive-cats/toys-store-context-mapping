@@ -153,7 +153,7 @@ BoundedContext StoresContext implements StoresDomain {
             - StoreId storeId
         }
 
-        DomainEvent AntiTheftSystemAlarmRaised
+        DomainEvent AntiTheftSystemAlarmTriggered
 
         Service LayoutManagers {
 

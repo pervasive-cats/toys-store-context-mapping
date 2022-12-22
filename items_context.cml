@@ -93,7 +93,7 @@ BoundedContext ItemsContext implements ItemsDomain {
         }
 
         ValueObject Amount {
-            int amount
+            double amount
         }
 
         ValueObject Currency
@@ -108,7 +108,7 @@ BoundedContext ItemsContext implements ItemsDomain {
             - Store store
         }
 
-        Service CatalogItemStateHandlersService {
+        Service CatalogItemStateHandlers {
 
             void onCatalogItemPutInPlace(@CatalogItemPutInPlace ^event);
 
@@ -180,7 +180,7 @@ BoundedContext ItemsContext implements ItemsDomain {
             - ItemId itemId
         }
 
-        Service ItemStateHandlersService {
+        Service ItemStateHandlers {
 
             void onItemAddedToCart(@ItemAddedToCart ^event);
 

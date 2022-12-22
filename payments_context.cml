@@ -15,7 +15,7 @@ BoundedContext PaymentsContext implements PaymentsDomain {
             - Email ^email
             - PaymentCard paymentCard
 
-            def @Customer updateData(@Email ^email, @PaymentCard paymentCard);
+            def @Customer updated(@Email ^email, @PaymentCard paymentCard);
 
             Repository CustomerRepository {
 
@@ -23,7 +23,7 @@ BoundedContext PaymentsContext implements PaymentsDomain {
 
                 void register(@Customer customer);
 
-                void updateData(@Customer customer, @Email ^email, @PaymentCard paymentCard);
+                void ^update(@Customer customer, @Email ^email, @PaymentCard paymentCard);
 
                 void unregister(@Customer customer);
             }
@@ -111,7 +111,7 @@ BoundedContext PaymentsContext implements PaymentsDomain {
         }
 
         ValueObject Amount {
-            int amount
+            double amount
         }
 
         ValueObject Currency

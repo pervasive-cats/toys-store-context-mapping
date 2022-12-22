@@ -64,11 +64,11 @@ BoundedContext CartsContext implements CartsDomain {
         }
 
         ValueObject Item {
-            - ItemCategory itemCategory
+            - CatalogItem catalogItem
             - ItemId id
         }
 
-        ValueObject ItemCategory {
+        ValueObject CatalogItem {
             long id
         }
 
@@ -85,14 +85,14 @@ BoundedContext CartsContext implements CartsDomain {
         DomainEvent ItemInsertedIntoCart {
             - CartId cartId
             - Store store
-            - ItemCategory itemCategory
+            - CatalogItem catalogItem
             - ItemId id
         }
 
         DomainEvent ItemAddedToCart {
             - Customer customer
             - Store store
-            - ItemCategory itemCategory
+            - CatalogItem catalogItem
             - ItemId id
         }
 

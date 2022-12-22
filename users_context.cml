@@ -84,7 +84,7 @@ BoundedContext UsersContext implements UsersDomain {
 
             - Store store
 
-            def @StoreManager moveToStore(@Store store);
+            def @StoreManager updateStore(@Store store);
 
             Repository StoreManagerRepository {
 
@@ -94,7 +94,7 @@ BoundedContext UsersContext implements UsersDomain {
 
                 void register(@StoreManager storeManager, @EncryptedPassword password);
 
-                void moveToStore(@StoreManager storeManager, @Store store);
+                void updateStore(@StoreManager storeManager, @Store store);
 
                 void updatePassword(@StoreManager storeManager, @EncryptedPassword password);
 
