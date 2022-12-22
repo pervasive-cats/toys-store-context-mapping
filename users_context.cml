@@ -31,7 +31,7 @@ BoundedContext UsersContext implements UsersDomain {
 
         Service PasswordAlgorithm {
 
-            boolean check(@EncryptedPassword expectedPassword, @PlainPassword actualPassword);
+            boolean verify(@EncryptedPassword expectedPassword, @PlainPassword actualPassword);
 
             @EncryptedPassword encrypt(@PlainPassword plainPassword);
         }
@@ -46,9 +46,7 @@ BoundedContext UsersContext implements UsersDomain {
             - NameComponent lastName
             - Email ^email
 
-            def @Customer updateData(@Email ^email, @NameComponent firstName, @NameComponent lastName, @Username username);
-
-            def @Customer updatePassword(@PlainPassword oldPassword, @PlainPassword newPassword);
+            def @Customer updated(@Email ^email, @NameComponent firstName, @NameComponent lastName, @Username username);
 
             Repository CustomerRepository {
 
@@ -88,8 +86,6 @@ BoundedContext UsersContext implements UsersDomain {
 
             def @StoreManager moveToStore(@Store store);
 
-            def @StoreManager updatePassword(@PlainPassword oldPassword, @PlainPassword newPassword);
-
             Repository StoreManagerRepository {
 
                 @StoreManager findByUsername(@Username username);
@@ -115,8 +111,6 @@ BoundedContext UsersContext implements UsersDomain {
 
         Entity Administration extends User {
             aggregateRoot
-
-            def @Administration updatePassword(@PlainPassword oldPassword, @PlainPassword newPassword);
 
             Repository AdministrationRepository {
 
