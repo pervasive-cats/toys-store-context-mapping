@@ -11,13 +11,12 @@
 |Amministrazione         |Administration    |
 |Applicazione            |App               |
 |Associare               |Associate         |
-|Attivato                |Triggered         |
+|Attivare                |Trigger           |
 |Bloccare                |Lock              |
 |Carrello                |Cart              |
 |Carta di pagamento      |Payment card      |
 |Categoria               |Kind              |
 |Cliente                 |Customer          |
-|Con successo            |Succeeded         |
 |Codice di sicurezza     |Card security code|
 |Cognome                 |Last name         |
 |Comprare                |Buy               |
@@ -30,26 +29,21 @@
 |Descrizione             |Description       |
 |Email                   |Email             |
 |Entrare                 |Enter             |
-|Fallimento              |Failure           |
-|Fallito                 |Failed            |
+|Fallire                 |Fail              |
 |Fila di prodotti        |Items row         |
 |Gondola                 |Shelving group    |
 |Identificatore          |Id                |
 |In carrello             |In cart           |
 |In chiaro               |Plain             |
-|Iniziato                |Started           |
-|Iniziando               |Starting          |
-|Inserito                |Inserted          |
-|Mobile                  |Movable           |
+|Iniziare                |Start             |
+|Inserire                |Insert            |
 |Muovere                 |Move              |
 |Negozio                 |Store             |
 |Nome                    |First name        |
 |Nome della tipologia    |Name              |
 |Nome utente             |Username          |
-|Non iniziato            |Not started       |
 |Numero della carta      |Card number       |
 |Pagare                  |Pay               |
-|Pagamento               |Payment           |
 |Password                |Password          |
 |Prezzo                  |Price             |
 |Procedura di acquisto   |Shopping process  |
@@ -57,11 +51,11 @@
 |Prodotto in catalogo    |Catalog item      |
 |Proprietario della carta|Cardholder        |
 |Quantità                |Amount            |
-|Raggiunto               |Reached           |
+|Raggiungere             |Reach             |
 |Registrare              |Register          |
 |Responsabile di negozio |Store Manager     |
-|Restituito              |Returned          |
-|Rilevato                |Detected          |
+|Restituire              |Return            |
+|Rilevare                |Detect            |
 |Rimettere a posto       |Put in place      |
 |Rimuovere               |Remove            |
 |Sbloccare               |Unlock            |
@@ -72,8 +66,7 @@
 |Sistema di restituzione |Drop system       |
 |Sollevare               |Lift              |
 |Successo                |Success           |
-|Terminando              |Terminating       |
-|Terminato               |Terminated        |
+|Terminare               |Terminate         |
 |Timestamp               |Timestamp         |
 |Timeout                 |Timeout           |
 |Tipologia di prodotto   |Item category     |
