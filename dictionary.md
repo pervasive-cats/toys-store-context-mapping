@@ -6,16 +6,13 @@
 |Accedere                |Login             |
 |Acquisto                |Purchase          |
 |Aggiungere              |Add               |
-|Aggiunto                |Added             |
 |Allarme                 |Alarm             |
 |Allestimento            |Layout            |
 |Amministrazione         |Administration    |
 |Applicazione            |App               |
 |Associare               |Associate         |
-|Associato               |Associated        |
 |Attivato                |Triggered         |
 |Bloccare                |Lock              |
-|Bloccato                |Locked            |
 |Carrello                |Cart              |
 |Carta di pagamento      |Payment card      |
 |Categoria               |Kind              |
@@ -28,14 +25,11 @@
 |Contenuto del carrello  |Cart contents     |
 |Costo                   |Cost              |
 |Criptare                |Encrypt           |
-|Criptato                |Encrypted         |
 |Dashboard               |Dashboard         |
 |De-registrare           |Unregister        |
-|De-registrato           |Unregistered      |
 |Descrizione             |Description       |
 |Email                   |Email             |
 |Entrare                 |Enter             |
-|Entrato                 |Entered           |
 |Fallimento              |Failure           |
 |Fallito                 |Failed            |
 |Fila di prodotti        |Items row         |
@@ -46,8 +40,6 @@
 |Iniziato                |Started           |
 |Iniziando               |Starting          |
 |Inserito                |Inserted          |
-|Login                   |Login             |
-|Logout                  |Logout            |
 |Mobile                  |Movable           |
 |Muovere                 |Move              |
 |Negozio                 |Store             |
@@ -73,15 +65,12 @@
 |Rimettere a posto       |Put in place      |
 |Rimuovere               |Remove            |
 |Sbloccare               |Unlock            |
-|Sbloccato               |Unlocked          |
 |Scaffalatura            |Shelving          |
 |Scaffale                |Shelf             |
 |Scansione               |Scan              |
 |Sistema antitaccheggio  |Anti-theft system |
 |Sistema di restituzione |Drop system       |
-|Sollevamento            |Lifting           |
 |Sollevare               |Lift              |
-|Sollevato               |Lifted            |
 |Successo                |Success           |
 |Terminando              |Terminating       |
 |Terminato               |Terminated        |
@@ -89,7 +78,6 @@
 |Timeout                 |Timeout           |
 |Tipologia di prodotto   |Item category     |
 |Uscire                  |Leave             |
-|Uscito                  |Left              |
 |Utente                  |User              |
 |Valuta                  |Currency          |
 |Verificare              |Verify            |
