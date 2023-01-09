@@ -35,6 +35,8 @@ BoundedContext ShoppingContext implements ShoppingDomain {
             - Store store
 
             def @StartedShoppingProcess associateCart(@Cart cart);
+
+            def @NotStartedShoppingProcess cancel();
         }
 
         Entity StartedShoppingProcess extends ShoppingProcess {
@@ -47,16 +49,22 @@ BoundedContext ShoppingContext implements ShoppingDomain {
             def @StartedShoppingProcess removeItemFromCart(@Item item);
 
             def @TerminatingShoppingProcess customerLeavesStore();
+
+            def @NotStartedShoppingProcess cancel();
         }
 
         Entity TerminatingShoppingProcess extends ShoppingProcess {
 
             def @TerminatedShoppingProcess timeoutIsReached();
+
+            def @NotStartedShoppingProcess cancel();
         }
 
         Entity TerminatedShoppingProcess extends ShoppingProcess {
 
             def @NotStartedShoppingProcess customerPaid();
+
+            def @NotStartedShoppingProcess cancel();
         }
 
         ValueObject Customer {

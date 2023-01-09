@@ -9,6 +9,7 @@
 |Allarme                 |Alarm             |
 |Allestimento            |Layout            |
 |Amministrazione         |Administration    |
+|Annullare               |Cancel            |
 |Applicazione            |App               |
 |Associare               |Associate         |
 |Attivare                |Trigger           |
