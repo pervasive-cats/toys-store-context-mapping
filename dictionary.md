@@ -5,7 +5,6 @@
 |A posto                 |In place          |
 |Accedere                |Login             |
 |Acquisto                |Purchase          |
-|Aggiungere              |Add               |
 |Allarme                 |Alarm             |
 |Allestimento            |Layout            |
 |Amministrazione         |Administration    |
@@ -58,7 +57,6 @@
 |Restituire              |Return            |
 |Rilevare                |Detect            |
 |Rimettere a posto       |Put in place      |
-|Rimuovere               |Remove            |
 |Sbloccare               |Unlock            |
 |Scaffalatura            |Shelving          |
 |Scaffale                |Shelf             |
